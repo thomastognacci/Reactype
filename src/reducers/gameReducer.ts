@@ -27,7 +27,7 @@ export const gameInitialState = () => ({
   currentIndex: 0,
   isComplete: false,
   score: 0,
-  timeMax: 5000,
+  timeMax: 1000,
 });
 
 const gameReducer = (state: State, action: Actions) => {

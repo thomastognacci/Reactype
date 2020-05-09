@@ -38,22 +38,23 @@ const Game: React.FC<Props> = () => {
   );
 
   const start = Date.now();
-  useInterval(
-    () => {
-      if (!timeLeft) return;
-      const timeSpent = Date.now() - start;
-      setTimeLeft(timeLeft - timeSpent);
-    },
-    timeLeft === null || timeLeft < 0 ? null : 100
-  );
+
+  useInterval(() => {
+    if (!timeLeft) return;
+    if (timeLeft < 0) {
+      dispatch({ type: 'NEXT_LETTER' });
+    }
+    const timeSpent = Date.now() - start;
+    setTimeLeft(timeLeft - timeSpent);
+  }, 100);
 
   useEffect(() => {
     window.addEventListener('keydown', handleUserKeyPress);
-
+    setTimeLeft(timeMax);
     return () => {
       window.removeEventListener('keydown', handleUserKeyPress);
     };
-  }, [handleUserKeyPress]);
+  }, [handleUserKeyPress, timeMax]);
 
   const displayChar = (): React.ReactElement => {
     return (
@@ -63,7 +64,6 @@ const Game: React.FC<Props> = () => {
       />
     );
   };
-  // TODO Passer le timer dans le reducer
   // console.log('State', state);
   // console.log('Time', timeLeft);
   // console.log('timerId', timerId);
