@@ -1,7 +1,6 @@
-import React, { useReducer, useEffect, useCallback, useState } from 'react';
+import React, { useReducer, useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
-import { useInterval } from '../utils';
 import gameReducer, { gameInitialState } from '../../reducers/gameReducer';
 import Key from './Key';
 
@@ -12,14 +11,11 @@ interface Props {
   keyboard?: string;
 }
 
-const Container = styled.div`
-  /* height: 100%; */
-`;
+const Container = styled.div``;
 
 const Game: React.FC<Props> = () => {
   const [state, dispatch] = useReducer(gameReducer, gameInitialState());
   const { currentIndex = 0, letters, isComplete = false, score = 0, timeMax = 0 } = state;
-  const [timeLeft, setTimeLeft] = useState(timeMax);
 
   const handleUserKeyPress = useCallback(
     (event) => {
@@ -37,36 +33,25 @@ const Game: React.FC<Props> = () => {
     [currentIndex, letters, isComplete]
   );
 
-  const start = Date.now();
-
-  useInterval(() => {
-    if (!timeLeft) return;
-    if (timeLeft < 0) {
-      dispatch({ type: 'NEXT_LETTER' });
-    }
-    const timeSpent = Date.now() - start;
-    setTimeLeft(timeLeft - timeSpent);
-  }, 100);
-
   useEffect(() => {
     window.addEventListener('keydown', handleUserKeyPress);
-    setTimeLeft(timeMax);
+
+    const timer = setTimeout(() => {
+      timeMax !== null && dispatch({ type: 'NEXT_LETTER' });
+    }, timeMax);
+
     return () => {
       window.removeEventListener('keydown', handleUserKeyPress);
+      clearTimeout(timer);
     };
   }, [handleUserKeyPress, timeMax]);
 
   const displayChar = (): React.ReactElement => {
-    return (
-      <Key
-        char={letters[currentIndex]}
-        progress={timeMax && timeLeft ? timeMax - (timeMax - timeLeft) : undefined}
-      />
-    );
+    const char = letters[currentIndex];
+
+    return <Key key={`${char}-${currentIndex}`} char={char} timeMax={timeMax} />;
   };
   // console.log('State', state);
-  // console.log('Time', timeLeft);
-  // console.log('timerId', timerId);
 
   return (
     <Container>

@@ -1,12 +1,22 @@
 import React from 'react';
-import styled from 'styled-components';
+import styled, { css, keyframes } from 'styled-components';
 
 interface Props {
   char: string;
-  progress?: number | undefined;
+  timeMax?: number | undefined;
 }
 
-const Container = styled.div<{ progress: number | undefined }>`
+const shrink = keyframes`
+  from {
+    transform: scaleY(1);
+  }
+
+  to {
+    transform: scaleY(0);
+  }
+`;
+
+const Container = styled.div<{ timeMax: number | undefined }>`
   position: relative;
   display: flex;
   font-size: 3rem;
@@ -24,14 +34,25 @@ const Container = styled.div<{ progress: number | undefined }>`
   &:before {
     content: '';
     position: absolute;
+    display: ${({ timeMax }) => (timeMax ? 'block' : 'none')};
     z-index: 0;
     top: 0;
     right: 0;
     bottom: 0;
     left: 0;
     background-color: #00000040;
-    transform: ${({ progress }) => (progress ? `scaleY(${1 - progress})` : 'scaleY(0)')};
+    transform-origin: bottom;
+    transition: transform 0.25s;
   }
+
+  ${({ timeMax }) =>
+    timeMax
+      ? css`
+          &:before {
+            animation: ${shrink} ${timeMax / 1000}s linear running;
+          }
+        `
+      : null}
 `;
 
 const KeyBoardKey = styled.div`
@@ -39,11 +60,9 @@ const KeyBoardKey = styled.div`
   z-index: 1;
 `;
 
-const Key: React.FC<Props> = ({ char, progress }) => {
-  console.log(progress);
-
+const Key: React.FC<Props> = ({ char, timeMax }) => {
   return (
-    <Container progress={progress}>
+    <Container timeMax={timeMax}>
       <KeyBoardKey>{char}</KeyBoardKey>
     </Container>
   );
