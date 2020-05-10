@@ -1,7 +1,9 @@
-import React from 'react';
+import React, { useReducer } from 'react';
 import styled from 'styled-components';
 
+import gameReducer, { settingsInitialState } from '../../reducers/game';
 import Game from '../Game/Game';
+import Menu from '../Menu/Menu';
 
 const ScreenContainer = styled.div`
   display: flex;
@@ -11,10 +13,12 @@ const ScreenContainer = styled.div`
 `;
 
 const Screen: React.FC = () => {
+  const [store, dispatch] = useReducer(gameReducer, settingsInitialState());
+
   return (
     <ScreenContainer>
-      {/* <Menu /> */}
-      <Game />
+      <Menu store={store} dispatch={dispatch} />
+      <Game key={store.difficulty} store={store} dispatch={dispatch} />
       {/* <HUD /> */}
     </ScreenContainer>
   );

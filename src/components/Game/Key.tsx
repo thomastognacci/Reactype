@@ -4,6 +4,7 @@ import styled, { css, keyframes } from 'styled-components';
 interface Props {
   char: string;
   timeMax?: number | undefined;
+  onClick?: () => void;
 }
 
 const shrink = keyframes`
@@ -16,12 +17,12 @@ const shrink = keyframes`
   }
 `;
 
-const Container = styled.div<{ timeMax: number | undefined }>`
+const Container = styled.div<{ timeMax: number | undefined; onClick: undefined | (() => void) }>`
   position: relative;
   display: flex;
   font-size: 3rem;
   border-radius: 4px;
-  width: 6rem;
+  min-width: 6rem;
   justify-content: center;
   align-items: center;
   padding: 0.5em;
@@ -30,6 +31,7 @@ const Container = styled.div<{ timeMax: number | undefined }>`
   overflow: hidden;
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22),
     -5px -5px 0 rgba(0, 0, 0, 0.22) inset;
+  cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
 
   &:before {
     content: '';
@@ -60,9 +62,9 @@ const KeyBoardKey = styled.div`
   z-index: 1;
 `;
 
-const Key: React.FC<Props> = ({ char, timeMax }) => {
+const Key: React.FC<Props> = ({ char, timeMax, onClick }) => {
   return (
-    <Container timeMax={timeMax}>
+    <Container timeMax={timeMax} onClick={onClick}>
       <KeyBoardKey>{char}</KeyBoardKey>
     </Container>
   );

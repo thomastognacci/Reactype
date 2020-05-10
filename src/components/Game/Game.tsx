@@ -1,21 +1,18 @@
-import React, { useReducer, useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import styled from 'styled-components';
 
-import gameReducer, { gameInitialState } from '../../reducers/gameReducer';
+import { State, Actions } from '../../reducers/game';
 import Key from './Key';
 
-// For later use
 interface Props {
-  difficulty?: string;
-  mode?: string;
-  keyboard?: string;
+  store: State;
+  dispatch: React.Dispatch<Actions>;
 }
 
 const Container = styled.div``;
 
-const Game: React.FC<Props> = () => {
-  const [state, dispatch] = useReducer(gameReducer, gameInitialState());
-  const { currentIndex = 0, letters, isComplete = false, score = 0, timeMax = 0 } = state;
+const Game: React.FC<Props> = ({ store, dispatch }) => {
+  const { currentIndex, letters, isComplete, timeMax } = store;
 
   const handleUserKeyPress = useCallback(
     (event) => {
@@ -30,7 +27,7 @@ const Game: React.FC<Props> = () => {
         dispatch({ type: 'MODIFY_SCORE', value: -1 });
       }
     },
-    [currentIndex, letters, isComplete]
+    [currentIndex, letters, isComplete, dispatch]
   );
 
   useEffect(() => {
@@ -44,23 +41,18 @@ const Game: React.FC<Props> = () => {
       window.removeEventListener('keydown', handleUserKeyPress);
       clearTimeout(timer);
     };
-  }, [handleUserKeyPress, timeMax]);
+  }, [handleUserKeyPress, timeMax, dispatch]);
 
   const displayChar = (): React.ReactElement => {
     const char = letters[currentIndex];
 
     return <Key key={`${char}-${currentIndex}`} char={char} timeMax={timeMax} />;
   };
-  // console.log('State', state);
 
   return (
     <Container>
       {isComplete ? (
-        <div>
-          ggwp, score: {score}/{letters.length}
-          <br />
-          <button onClick={() => dispatch({ type: 'RESTART' })}>Restart</button>
-        </div>
+        <Key onClick={() => dispatch({ type: 'RESTART' })} char="RESTART" />
       ) : (
         displayChar()
       )}
