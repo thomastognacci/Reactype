@@ -38,7 +38,7 @@ export interface State {
   keyboard?: GAME_KEYBOARD;
 }
 
-export const settingsInitialState = () => ({
+export const settingsInitialState = {
   letters: generateArrayOfLetter(5),
   currentIndex: 0,
   isComplete: false,
@@ -47,7 +47,7 @@ export const settingsInitialState = () => ({
   difficulty: GAME_DIFFICULTY.EASY,
   mode: GAME_MODE.LETTERS,
   keyboard: GAME_KEYBOARD.AZERTY,
-});
+};
 
 const restartGame = () => ({
   letters: generateArrayOfLetter(5),

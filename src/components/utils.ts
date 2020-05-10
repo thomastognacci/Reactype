@@ -1,14 +1,20 @@
 import { useEffect, useRef } from 'react';
 
 export const generateArrayOfLetter = (length: number): string[] => {
-  const arr = [];
+  const arr: string[] = [];
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
 
   while (arr.length < length) {
-    const char = letters.charAt(Math.floor(Math.random() * letters.length));
+    const index: number = Math.floor(Math.random() * letters.length);
+    const char: string = letters.charAt(index);
+
+    if (arr.includes(char)) {
+      console.log(`${char} exist in ${arr}, shuffling again`);
+      continue;
+    }
+
     arr.push(char);
   }
-
   return arr;
 };
 

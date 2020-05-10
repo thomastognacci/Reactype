@@ -16,9 +16,13 @@ const Game: React.FC<Props> = ({ store, dispatch }) => {
 
   const handleUserKeyPress = useCallback(
     (event) => {
-      const { key } = event;
-      if (isComplete) return;
-
+      const { key, keyCode } = event;
+      if (isComplete) {
+        if (keyCode === 32) {
+          dispatch({ type: 'RESTART' });
+        }
+        return;
+      }
       if (key.toLowerCase() === letters[currentIndex].toLowerCase()) {
         dispatch({ type: 'NEXT_LETTER' });
         dispatch({ type: 'MODIFY_SCORE', value: 1 });
@@ -50,13 +54,7 @@ const Game: React.FC<Props> = ({ store, dispatch }) => {
   };
 
   return (
-    <Container>
-      {isComplete ? (
-        <Key onClick={() => dispatch({ type: 'RESTART' })} char="RESTART" />
-      ) : (
-        displayChar()
-      )}
-    </Container>
+    <Container>{isComplete ? <Key char="PRESS SPACE TO RESTART" /> : displayChar()}</Container>
   );
 };
 

@@ -13,7 +13,7 @@ const ScreenContainer = styled.div`
 `;
 
 const Screen: React.FC = () => {
-  const [store, dispatch] = useReducer(gameReducer, settingsInitialState());
+  const [store, dispatch] = useReducer(gameReducer, settingsInitialState);
 
   return (
     <ScreenContainer>
