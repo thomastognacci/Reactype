@@ -1,21 +1,20 @@
-import React, { useEffect, useCallback } from 'react';
+import React, { useEffect, useCallback, useContext } from 'react';
 import styled from 'styled-components';
 
-import { State, Actions } from '../../reducers/game';
+import { GameContext } from '../../context/context';
 import Key from './Key';
 
-interface Props {
-  store: State;
-  dispatch: React.Dispatch<Actions>;
-}
+interface Props {}
 
 const Container = styled.div``;
 
-const Game: React.FC<Props> = ({ store, dispatch }) => {
+const Game: React.FC<Props> = () => {
+  const { dispatch, store } = useContext(GameContext);
   const { currentIndex, letters, isComplete, timeMax } = store;
 
   const handleUserKeyPress = useCallback(
     (event) => {
+      if (!dispatch) return;
       const { key, keyCode } = event;
       if (isComplete) {
         if (keyCode === 32) {
@@ -38,7 +37,9 @@ const Game: React.FC<Props> = ({ store, dispatch }) => {
     window.addEventListener('keydown', handleUserKeyPress);
 
     const timer = setTimeout(() => {
-      timeMax !== null && dispatch({ type: 'NEXT_LETTER' });
+      if (dispatch !== null && timeMax !== null) {
+        dispatch({ type: 'NEXT_LETTER' });
+      }
     }, timeMax);
 
     return () => {

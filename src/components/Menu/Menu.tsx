@@ -1,19 +1,18 @@
-import React from 'react';
-import { State, Actions } from '../../reducers/game';
+import React, { useContext } from 'react';
+import { GameContext } from '../../context/context';
 import { GAME_DIFFICULTY } from '../../types/enums';
 import styled from 'styled-components';
 
-interface Props {
-  store: State;
-  dispatch: React.Dispatch<Actions>;
-}
+interface Props {}
 
 const DifficultyPicker = styled.div`
   position: absolute;
   top: 2rem;
 `;
 
-const Menu: React.FC<Props> = ({ store, dispatch }) => {
+const Menu: React.FC<Props> = () => {
+  const { dispatch, store } = useContext(GameContext);
+  if (!dispatch || !store) return null;
   const { difficulty } = store;
   return (
     <DifficultyPicker>
