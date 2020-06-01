@@ -22,7 +22,7 @@ export type Actions =
     }
   | {
       type: 'MODIFY_SCORE';
-      value: number;
+      value: 1 | -1;
     };
 
 type letters = string[];
@@ -33,16 +33,33 @@ export interface State {
   isComplete: boolean;
   score: number;
   timeMax: number | undefined;
+  withTimeMax: boolean;
+  history: (1|-1)[] | [];
   difficulty: GAME_DIFFICULTY;
   mode?: GAME_MODE;
   keyboard?: GAME_KEYBOARD;
 }
 
-export const settingsInitialState = {
-  letters: generateArrayOfLetter(5),
+interface InitialState {
+  letters: letters;
+  currentIndex: number;
+  isComplete: boolean;
+  score: number;
+  history: (1|-1)[] | [];
+  withTimeMax: boolean,
+}
+
+const initialState = () : InitialState => ({
+  letters: generateArrayOfLetter(10),
   currentIndex: 0,
   isComplete: false,
   score: 0,
+  history: [],
+  withTimeMax: true,
+});
+
+export const settingsInitialState = {
+  ...initialState(),
   timeMax: 4000,
   difficulty: GAME_DIFFICULTY.EASY,
   mode: GAME_MODE.LETTERS,
@@ -50,10 +67,7 @@ export const settingsInitialState = {
 };
 
 const restartGame = () => ({
-  letters: generateArrayOfLetter(5),
-  currentIndex: 0,
-  isComplete: false,
-  score: 0,
+  ...initialState()
 });
 
 const gameReducer = (state: State, action: Actions) => {
@@ -71,10 +85,18 @@ const gameReducer = (state: State, action: Actions) => {
         isComplete: true,
       };
     case 'MODIFY_SCORE':
+      const { history, isComplete } = state;
+      const newHistory = [...history]
+      if (!isComplete && currentIndex <= letters.length - 1) {
+        newHistory[currentIndex - 1] = action.value;
+      } else {
+        newHistory[letters.length - 1] = action.value;
+      }
       return {
         ...state,
         score: score + action.value >= 0 ? score + action.value : 0,
-      };
+        history: newHistory,
+      };  
     case 'RESTART':
       return {
         ...state,

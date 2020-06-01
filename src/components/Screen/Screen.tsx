@@ -5,8 +5,10 @@ import gameReducer, { settingsInitialState } from '../../context/reducer';
 import { GameContextProvider } from '../../context/context';
 import Game from '../Game/Game';
 import Menu from '../Menu/Menu';
+import HUD from '../HUD/HUD';
 
 const ScreenContainer = styled.div`
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -25,8 +27,8 @@ const Screen: React.FC = () => {
     <GameContextProvider value={contextValue}>
       <ScreenContainer>
         <Menu />
-        <Game key={store.difficulty} />
-        {/* <HUD /> */}
+        <Game />
+        <HUD />
       </ScreenContainer>
     </GameContextProvider>
   );

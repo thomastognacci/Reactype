@@ -10,19 +10,30 @@ const Container = styled.div``;
 
 const Game: React.FC<Props> = () => {
   const { dispatch, store } = useContext(GameContext);
-  const { currentIndex, letters, isComplete, timeMax } = store;
+  const { currentIndex, letters, isComplete, timeMax, withTimeMax } = store;
 
   const handleUserKeyPress = useCallback(
     (event) => {
       if (!dispatch) return;
       const { key, keyCode } = event;
-      if (isComplete) {
-        if (keyCode === 32) {
+      const disabledKeys = [
+        8,  // Backspace
+        9,  // Tab
+        13, // Return
+        16, // Shift
+        17, // Ctrl
+        18, // Alt
+        32, // Spacebar
+        91, // Meta / Windows
+        93, // Context Menu
+      ];
+
+      if (isComplete || disabledKeys.includes(keyCode)) {
+        if (isComplete && keyCode === 32) {
           dispatch({ type: 'RESTART' });
         }
         return;
-      }
-      if (key.toLowerCase() === letters[currentIndex].toLowerCase()) {
+      } else if (key.toLowerCase() === letters[currentIndex].toLowerCase()) {
         dispatch({ type: 'NEXT_LETTER' });
         dispatch({ type: 'MODIFY_SCORE', value: 1 });
       } else {
@@ -37,7 +48,7 @@ const Game: React.FC<Props> = () => {
     window.addEventListener('keydown', handleUserKeyPress);
 
     const timer = setTimeout(() => {
-      if (dispatch !== null && timeMax !== null) {
+      if (dispatch !== null && timeMax !== null && withTimeMax) {
         dispatch({ type: 'NEXT_LETTER' });
       }
     }, timeMax);
@@ -46,12 +57,12 @@ const Game: React.FC<Props> = () => {
       window.removeEventListener('keydown', handleUserKeyPress);
       clearTimeout(timer);
     };
-  }, [handleUserKeyPress, timeMax, dispatch]);
+  }, [handleUserKeyPress, dispatch, timeMax, withTimeMax]);
 
   const displayChar = (): React.ReactElement => {
     const char = letters[currentIndex];
 
-    return <Key key={`${char}-${currentIndex}`} char={char} timeMax={timeMax} />;
+    return <Key key={`${char}-${currentIndex}`} char={char} timeMax={withTimeMax ? timeMax : undefined} />;
   };
 
   return (

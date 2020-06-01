@@ -2,7 +2,9 @@ import React from 'react';
 import styled, { css, keyframes } from 'styled-components';
 
 interface Props {
-  char: string;
+  solved?: 1 | -1;
+  small?: boolean;
+  char?: string;
   timeMax?: number | undefined;
   onClick?: () => void;
 }
@@ -17,12 +19,13 @@ const shrink = keyframes`
   }
 `;
 
-const Container = styled.div<{ timeMax: number | undefined; onClick: undefined | (() => void) }>`
+const Container = styled.div<Props>`
   position: relative;
   display: flex;
-  font-size: 3rem;
+  font-size: 3em;
   border-radius: 4px;
-  min-width: 6rem;
+  min-width: ${({small}) => small ? '1em' : '2em'};
+  min-height: ${({small}) => small ? '1em' : '2em'};
   justify-content: center;
   align-items: center;
   padding: 0.5em;
@@ -32,6 +35,10 @@ const Container = styled.div<{ timeMax: number | undefined; onClick: undefined |
   box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22),
     -5px -5px 0 rgba(0, 0, 0, 0.22) inset;
   cursor: ${({ onClick }) => (onClick ? 'pointer' : 'default')};
+
+  ${({solved}) => solved !== undefined && css`
+      background-color: ${solved === 1 ? '#6cff72' : '#ff6e6e'};
+  `}
 
   &:before {
     content: '';
@@ -62,10 +69,10 @@ const KeyBoardKey = styled.div`
   z-index: 1;
 `;
 
-const Key: React.FC<Props> = ({ char, timeMax, onClick }) => {
+const Key: React.FC<Props> = ({ solved, small, char, timeMax, onClick }) => {
   return (
-    <Container timeMax={timeMax} onClick={onClick}>
-      <KeyBoardKey>{char}</KeyBoardKey>
+    <Container solved={solved} small={small} timeMax={timeMax} onClick={onClick}>
+      {char && (<KeyBoardKey>{char}</KeyBoardKey>)}
     </Container>
   );
 };
