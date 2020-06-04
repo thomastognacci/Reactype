@@ -9,10 +9,19 @@ import HUD from '../HUD/HUD';
 
 const ScreenContainer = styled.div`
   position: relative;
+  height: 100%;
+  overflow: hidden;
+`;
+
+const GameContainer = styled.div<{ menuIsOpen: boolean }>`
+  position: relative;
   display: flex;
   justify-content: center;
   align-items: center;
+  width: 100%;
   height: 100%;
+  transition: transform 0.35s;
+  transform: ${({ menuIsOpen }) => (menuIsOpen ? 'scale(0.8)' : 'scale(1)')};
 `;
 
 const Screen: React.FC = () => {
@@ -23,12 +32,16 @@ const Screen: React.FC = () => {
     return { store, dispatch };
   }, [store, dispatch]);
 
+  const { menuIsOpen } = store;
+
   return (
     <GameContextProvider value={contextValue}>
       <ScreenContainer>
-        <Menu />
-        <Game />
-        <HUD />
+        <Menu menuIsOpen={menuIsOpen} />
+        <GameContainer menuIsOpen={menuIsOpen}>
+          <Game />
+          <HUD />
+        </GameContainer>
       </ScreenContainer>
     </GameContextProvider>
   );

@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import styled from 'styled-components';
+import { CSSTransition } from 'react-transition-group';
+
 import Key from '../Game/Key';
 import { GameContext } from '../../context/context';
 
-interface Props {
-
-}
+interface Props {}
 
 const HUDContainer = styled.div`
   position: absolute;
@@ -16,31 +16,33 @@ const HUDContainer = styled.div`
   justify-content: center;
 `;
 
-const KeyContainer = styled.div`
-  margin-right: 1rem;
-`;
-
 const HUD: React.FC<Props> = () => {
   const { store } = useContext(GameContext);
+  const { currentIndex } = store;
 
-  const renderKeys = () : JSX.Element[] => {
+  const renderKeys = (): JSX.Element[] => {
     const { letters, history } = store;
-    
+    const tryingToGenerateThatUniqueKey = letters.reduce((prev, curr) => {
+      return `${prev}-${curr}`;
+    });
+
     const listOfKeys = letters.map((letter, index) => {
-    const solved = history[index] || undefined;
+      const solved = history[index] || undefined;
       return (
-      <KeyContainer>
-        <Key key={letter} small solved={solved}/>
-      </KeyContainer>
-      )
-    })
-    return listOfKeys
-  }
-  return (
-    <HUDContainer>
-      { renderKeys() }
-    </HUDContainer>
-  );
+        <CSSTransition
+          appear
+          in
+          timeout={50 * index}
+          classNames="hud-keys"
+          key={`${tryingToGenerateThatUniqueKey}-${letter}-${index}`}
+        >
+          <Key small solved={solved} />
+        </CSSTransition>
+      );
+    });
+    return listOfKeys;
+  };
+  return <HUDContainer>{currentIndex > -1 && renderKeys()}</HUDContainer>;
 };
 
 export default HUD;

@@ -3,6 +3,12 @@ import { generateArrayOfLetter } from '../components/utils';
 
 export type Actions =
   | {
+      type: 'START';
+    }
+  | {
+      type: 'TOGGLE_MENU';
+    }
+  | {
       type: 'SET_DIFFICULTY';
       value: GAME_DIFFICULTY;
     }
@@ -34,10 +40,11 @@ export interface State {
   score: number;
   timeMax: number | undefined;
   withTimeMax: boolean;
-  history: (1|-1)[] | [];
+  history: (1 | -1)[] | [];
   difficulty: GAME_DIFFICULTY;
   mode?: GAME_MODE;
   keyboard?: GAME_KEYBOARD;
+  menuIsOpen: boolean;
 }
 
 interface InitialState {
@@ -45,17 +52,19 @@ interface InitialState {
   currentIndex: number;
   isComplete: boolean;
   score: number;
-  history: (1|-1)[] | [];
-  withTimeMax: boolean,
+  history: (1 | -1)[] | [];
+  withTimeMax: boolean;
+  menuIsOpen: boolean;
 }
 
-const initialState = () : InitialState => ({
+const initialState = (): InitialState => ({
   letters: generateArrayOfLetter(10),
-  currentIndex: 0,
+  currentIndex: -1,
   isComplete: false,
   score: 0,
   history: [],
   withTimeMax: true,
+  menuIsOpen: false,
 });
 
 export const settingsInitialState = {
@@ -67,12 +76,15 @@ export const settingsInitialState = {
 };
 
 const restartGame = () => ({
-  ...initialState()
+  ...initialState(),
+  currentIndex: 0,
+  menuIsOpen: false,
 });
 
 const gameReducer = (state: State, action: Actions) => {
   const { currentIndex, letters, score } = state;
   switch (action.type) {
+    case 'START':
     case 'NEXT_LETTER':
       if ((currentIndex || 0) < letters.length - 1) {
         return {
@@ -86,7 +98,7 @@ const gameReducer = (state: State, action: Actions) => {
       };
     case 'MODIFY_SCORE':
       const { history, isComplete } = state;
-      const newHistory = [...history]
+      const newHistory = [...history];
       if (!isComplete && currentIndex <= letters.length - 1) {
         newHistory[currentIndex - 1] = action.value;
       } else {
@@ -96,7 +108,7 @@ const gameReducer = (state: State, action: Actions) => {
         ...state,
         score: score + action.value >= 0 ? score + action.value : 0,
         history: newHistory,
-      };  
+      };
     case 'RESTART':
       return {
         ...state,
@@ -107,6 +119,11 @@ const gameReducer = (state: State, action: Actions) => {
         ...state,
         difficulty: action.value,
         timeMax: 4000 / Math.exp(action.value),
+      };
+    case 'TOGGLE_MENU':
+      return {
+        ...state,
+        menuIsOpen: !state.menuIsOpen,
       };
     case 'SET_MODE':
     case 'SET_KEYBOARD':
